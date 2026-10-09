@@ -1,0 +1,56 @@
+# Python and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Local input data; keep placement instructions
+**/data/**
+!**/data/
+!**/data/README.md
+**/exercise_2_data/**
+!**/exercise_2_data/
+!**/exercise_2_data/README.md
+
+# New runs; submitted_results/ is intentionally tracked
+**/work/
+**/results/
+**/outputs_ex02/
+**/runs/
+*.pkl
+*.pkl.gz
+*.npz
+*.npy
+*.joblib
+*.onnx
+*.pt
+*.pth
+*.h5
+*.hdf5
+*.mat
+*.CR3
+*.cr3
+*.zip
+individual_exercise3_results.txt
+
+# Keep the submitted text snapshot
+!**/submitted_results/individual_exercise3_results.txt
+
+# Local credentials and editor state
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
