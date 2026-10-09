@@ -1,0 +1,89 @@
+Individual Exercise 3 - Writer Retrieval Results
+
+Train encodings: (1182, 12800)
+Test encodings:  (3600, 12800)
+
+Baseline
+--------
+Baseline VLAD
+Top-1: 0.821944 (82.19%)
+mAP:   0.629688
+
+Experiment 1: PCA whitening
+---------------------------
+PCA 128D
+Explained variance: 0.7593
+Top-1: 83.89%
+mAP:   0.6668
+
+PCA 256D
+Explained variance: 0.8509
+Top-1: 85.19%
+mAP:   0.6952
+
+PCA 512D
+Explained variance: 0.9356
+Top-1: 86.28%
+mAP:   0.7105
+
+PCA 1024D
+Explained variance: 0.9940
+Top-1: 0.869444 (86.94%)
+mAP:   0.717129
+
+Experiment 2: Reciprocal query expansion on original VLAD
+---------------------------------------------------------
+R-QE k=1
+Top-1: 82.19%
+mAP:   0.6368
+
+R-QE k=2
+Top-1: 82.64%
+mAP:   0.6463
+
+R-QE k=3
+Top-1: 0.827500 (82.75%)
+mAP:   0.653897
+Average reciprocal neighbours: 1.924
+
+R-QE k=5
+Top-1: 80.36%
+mAP:   0.6471
+
+Experiment 3: PCA 1024D followed by reciprocal query expansion
+---------------------------------------------------------------
+PCA 1024D + R-QE k=1
+Top-1: 86.94%
+mAP:   0.7268
+
+PCA 1024D + R-QE k=2
+Top-1: 87.06%
+mAP:   0.7377
+
+PCA 1024D + R-QE k=3
+Top-1: 86.97%
+mAP:   0.7460
+
+PCA 1024D + R-QE k=4
+Top-1: 0.867778 (86.78%)
+mAP:   0.748148
+Average reciprocal neighbours: 2.993
+
+PCA 1024D + R-QE k=5
+Top-1: 85.47%
+mAP:   0.7408
+
+Best mAP
+--------
+Method: PCA 1024D + R-QE k=4
+Top-1: 86.78%
+mAP:   0.7481
+
+Best Top-1
+----------
+Method: PCA 1024D + R-QE k=2
+Top-1: 87.06%
+mAP:   0.7377
+
+Command for the full experiment:
+python exercise3.py --enc-train enc_train.pkl.gz --enc-test enc_test.pkl.gz --labels-test icdar17_labels_test.txt --pca-dims 128,256,512,1024 --rqe-k 1,2,3,5 --combined-k 1,2,3,4,5 --best-pca-dim 1024

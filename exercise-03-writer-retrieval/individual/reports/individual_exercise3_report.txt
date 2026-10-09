@@ -1,0 +1,82 @@
+Individual Exercise 3 - Writer Retrieval Improvements
+
+Name: Yasaman Piroozfar
+Course: Project Computer Vision
+Semester: Summer Semester 2026
+
+1. Starting point
+
+I used the VLAD features produced by the group pipeline. The training file contains
+1182 vectors and the test file contains 3600 vectors. Each VLAD vector has 12,800
+dimensions.
+
+The baseline result was:
+
+Top-1 accuracy: 82.19%
+mAP: 0.6297
+
+Cosine similarity was used after L2 normalization. During evaluation, the query
+image itself was removed from the ranked list.
+
+2. Method 1: PCA with whitening
+
+PCA was fitted only on the training VLAD vectors. The test vectors were then
+transformed with the fitted PCA model, whitened, and L2-normalized.
+
+Results:
+
+PCA dimensions | Explained variance | Top-1 | mAP
+128            | 0.7593             | 83.89% | 0.6668
+256            | 0.8509             | 85.19% | 0.6952
+512            | 0.9356             | 86.28% | 0.7105
+1024           | 0.9940             | 86.94% | 0.7171
+
+The best PCA result was obtained with 1024 dimensions. Compared with the baseline,
+the mAP improved from 0.6297 to 0.7171.
+
+3. Method 2: Reciprocal query expansion
+
+For each query, I found its top-k nearest neighbours. A neighbour was used only
+when the relationship was reciprocal, meaning that the neighbour also ranked the
+query inside its own top-k list. The expanded query was the normalized sum of the
+original query and the accepted reciprocal neighbours. Writer labels were not used
+for this step.
+
+Results on the original VLAD vectors:
+
+k | Top-1 | mAP
+1 | 82.19% | 0.6368
+2 | 82.64% | 0.6463
+3 | 82.75% | 0.6539
+5 | 80.36% | 0.6471
+
+The best result for this method was obtained with k=3. The mAP improved from
+0.6297 to 0.6539. Using a larger neighbourhood reduced the result, probably
+because less reliable neighbours were added.
+
+4. Combination of both methods
+
+I also applied reciprocal query expansion after PCA whitening with 1024
+dimensions.
+
+k | Top-1 | mAP
+1 | 86.94% | 0.7268
+2 | 87.06% | 0.7377
+3 | 86.97% | 0.7460
+4 | 86.78% | 0.7481
+5 | 85.47% | 0.7408
+
+The best mAP was 0.7481 with k=4. The best Top-1 accuracy was 87.06% with k=2.
+
+5. Conclusion
+
+Both individual methods improved the group baseline. PCA whitening gave the
+largest improvement by itself. Reciprocal query expansion improved the ranking
+further when it was applied after PCA. The final best result was:
+
+Top-1 accuracy: 86.78%
+mAP: 0.7481
+
+Reproduction command:
+
+python exercise3.py --enc-train enc_train.pkl.gz --enc-test enc_test.pkl.gz --labels-test icdar17_labels_test.txt --pca-dims 128,256,512,1024 --rqe-k 1,2,3,5 --combined-k 1,2,3,4,5 --best-pca-dim 1024
