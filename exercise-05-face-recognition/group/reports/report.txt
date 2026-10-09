@@ -1,0 +1,95 @@
+Exercise 5: Face Recognition
+
+4.1 Face Detection, Tracking and Alignment
+
+Settings:
+tm_method = cv2.TM_CCOEFF_NORMED
+tm_window_size = 25
+tm_threshold = 0.70
+aligned_image_size = 224
+
+Template matching comparison (mean quality margin):
+TM_CCOEFF_NORMED: 0.440563
+TM_CCORR_NORMED: 0.055186
+TM_SQDIFF_NORMED: 0.124051
+
+TM_CCOEFF_NORMED gave the largest margin, so I used it.
+
+Tracking parameter comparison on Alan_Ball + Nancy_Sinatra:
+25 / 0.70 -> 99.21% identification, 108 MTCNN re-detections
+50 / 0.80 -> 99.21% identification, 210 MTCNN re-detections
+
+I used 25 / 0.70 because it gave the same identification result with fewer MTCNN re-detections.
+
+Limitations:
+45 px motion -> tracking lost, MTCNN re-detection
+strong central occlusion -> tracking lost, MTCNN re-detection
+
+4.2 Face Identification and Verification
+
+Settings:
+num_neighbours = 3
+max_distance = 1.044035
+min_prob = 2/3
+color/grayscale fusion = 0.5 / 0.5
+
+I tested k = 1, 3, 5, 7. They gave the same closed-set accuracy, so I used k=3.
+
+I also tested different non-zero color/grayscale weights. Several settings gave the same best result, so I used 0.5 / 0.5.
+
+Full-video result:
+known: 1076 / 1080 correct = 99.63%
+known rejected: 4
+unknown: 154 / 154 rejected
+FAR: 0.00%
+
+Unknown persons:
+Al_Pacino: 49 / 49 rejected
+Maria_Shriver: 105 / 105 rejected
+
+Open-set criterion comparison:
+distance only: FAR 0.00%
+probability only: FAR 99.35%
+combined OR rule: FAR 0.00%
+
+Robustness test:
+dark illumination: 100.00%
+bright illumination: 100.00%
+lower-face occlusion: 86.67%
+central occlusion: 53.33%
+
+4.3 Face Clustering and Re-Identification
+
+Settings:
+num_clusters = 2
+max_iter = 200
+
+Final clustering:
+persons: Alan_Ball + Marina_Silva
+final objective: 11.49636290
+convergence: 2-3 iterations
+
+Using 10 different random seeds, the Alan+Marina, Manuel+Nancy and Peter+Alan two-person test sets reached 100% purity. The Marina+Manuel+Peter three-person test gave 70.47%-100% purity depending on initialization.
+
+Re-identification:
+Alan_Ball: 432 / 432 correct
+Marina_Silva: 173 / 173 correct
+
+The k-means objective curve is in results/kmeans_objective.png.
+
+4.4 Evaluation of Face Recognition
+
+Rank-1 identification rate:
+0.94717369
+
+FAR <= 1%, maximum identification rate:
+threshold = -0.4955679476
+FAR = 0.9846%
+identification rate = 70.3392%
+
+Identification rate >= 90%, minimum FAR:
+threshold = -0.6717771888
+identification rate = 90.0103%
+FAR = 14.0442%
+
+The DIR curve is in results/dir_curve.png.

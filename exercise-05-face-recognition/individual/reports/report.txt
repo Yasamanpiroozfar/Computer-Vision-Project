@@ -1,0 +1,38 @@
+Exercise 5: Face Recognition
+
+Validation protocol:
+For each known class, 2 samples were used for training and 1 for validation.
+20% of the KUC samples were held out as unknown validation samples.
+The results are averages over 9 validation splits.
+
+SPL
+
+Method:
+NearestNeighbors, n_neighbors=1, Euclidean distance
+normalized known/unknown distance margin
+
+Validation:
+AUCROC = 0.979724
+DIR@FAR=1% = 0.867395
+DIR@FAR=10% = 0.944809
+balanced rank-1 = 0.979235
+fit time ≈ 0.002 s
+prediction time/sample ≈ 0.000896 s
+
+MPL
+
+Method:
+one centroid per known class
+one pseudo class per KUC sample
+pairwise_distances_argmin_min with Euclidean distance
+normalized known/unknown distance margin
+
+Validation:
+AUCROC = 0.985263
+DIR@FAR=1% = 0.916393
+DIR@FAR=10% = 0.963388
+balanced rank-1 = 0.988525
+fit time ≈ 0.016 s
+prediction time/sample ≈ 0.00002782 s
+
+All 6 provided tests passed.

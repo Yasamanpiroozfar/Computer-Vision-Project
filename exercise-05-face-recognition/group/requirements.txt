@@ -1,0 +1,4 @@
+-r src/cvproj_exc/requirements.txt
+numpy
+tensorflow
+h5py
