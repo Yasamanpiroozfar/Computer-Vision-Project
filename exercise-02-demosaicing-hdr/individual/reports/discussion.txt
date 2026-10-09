@@ -1,0 +1,37 @@
+INDIVIDUAL EXERCISE 2 - DISCUSSION
+
+1. CAMERA RESPONSE ESTIMATION
+
+The JPG exposure sequence contains the same scene captured with different exposure times. I read the exposure times from the EXIF data and estimated a separate inverse response curve for the red, green and blue channels.
+
+For each pair of adjacent exposures, I used corresponding pixels that were not too dark and not close to saturation. The exposure-time ratio gives the expected change in the underlying linear intensity. Starting from an initial monotonic curve, I updated the values iteratively using the median of the estimates obtained from the pixel pairs. I also applied light smoothing and enforced monotonicity after each iteration.
+
+The resulting curves are shown in estimated_camera_response.png.
+
+2. LINEARIZATION CHECK
+
+I applied the estimated inverse response curves to the JPG values and compared the reconstructed intensity ratios of adjacent exposures with their exposure-time ratios.
+
+For most exposure pairs, the measured values were close to the expected ratios. The differences were larger for the darkest images, where quantization, noise and JPG processing have a stronger influence.
+
+The comparison is shown in linearization_check.png, and the measured values are stored in linearization_ratios.csv.
+
+3. HDR COMBINATION
+
+I used the longest exposure as the initial HDR image. Each following image was first linearized and then multiplied by the exposure ratio relative to the longest exposure. Pixels above the current threshold were replaced by values from the shorter exposure. I used a threshold fraction of 0.8.
+
+After combining the exposure sequence, I applied gray-world white balance. I generated two display versions from the same HDR data.
+
+The first version uses logarithmic compression followed by min-max normalization and is saved as hdr_from_jpg.jpg.
+
+The second version uses percentile normalization after the logarithm and applies a small gamma correction of 0.85. This produces brighter midtones and reduces the influence of a few extreme pixel values. It is saved as hdr_from_jpg_enhanced.jpg.
+
+The comparison image shows the long exposure, a middle exposure and both HDR results.
+
+4. LIMITATIONS
+
+The method assumes that the camera and the scene remain unchanged during the exposure sequence. Movement between the images would cause incorrect pixel correspondences.
+
+The estimated response can also be affected by JPG compression, noise, sharpening and other processing performed by the camera. Very dark and nearly saturated values were therefore excluded from the estimation.
+
+The enhanced result is visually brighter, but both output images are generated from the same estimated response curves and the same HDR data.
