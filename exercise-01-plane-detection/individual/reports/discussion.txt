@@ -1,0 +1,61 @@
+INDIVIDUAL EXERCISE 1 - DISCUSSION
+
+1. MLESAC
+
+For MLESAC, I replaced the binary RANSAC score with a residual-based cost. Points with a distance smaller than epsilon contribute their point-to-plane distance, while all other points contribute the constant gamma. The model with the lowest total cost is selected. I used gamma = 0.020 m, which is larger than all tested epsilon values.
+
+I tested epsilon values of 0.004, 0.006, 0.008, 0.010 and 0.012 m on example4kinect. Each setting was repeated with five random seeds and 256 hypotheses. A floor plane estimated with a larger number of hypotheses was used as a common reference for the comparisons.
+
+For the smaller epsilon values, RANSAC and MLESAC produced similar results. The difference was more visible at larger thresholds. At epsilon = 0.012 m, the mean offset difference was approximately 1.55 mm for RANSAC and 0.56 mm for MLESAC. The mean normal-angle difference was approximately 0.092 degrees for RANSAC and 0.080 degrees for MLESAC.
+
+In this experiment, MLESAC was more stable when epsilon was increased. However, it was still affected by the selected threshold because a larger epsilon accepts more points as inliers.
+
+Advantages:
+- Inlier residuals are included in the score.
+- Models with similar inlier counts can still be distinguished.
+- The results were more stable for the larger epsilon values.
+
+Disadvantages:
+- Epsilon and gamma still need to be selected.
+- The cost depends on the unit and scale of the residuals.
+- Scoring requires more calculations than binary inlier counting.
+
+Results:
+results/mlesac_epsilon_comparison.png
+results/mlesac_epsilon_summary.csv
+
+
+2. PREEMPTIVE RANSAC
+
+For Preemptive RANSAC, I first generated M plane hypotheses. The hypotheses were evaluated on blocks of B randomly ordered points, and their costs were accumulated after every block. The models were then ranked and the weaker hypotheses were removed using:
+
+f(i) = floor(M * 2^(-floor(i/B)))
+
+The process continued until only one hypothesis remained or all points had been evaluated. The hypotheses were scored using the MLESAC cost.
+
+I tested M = 64, 256 and 1024 with B = 64, 256 and 1024, resulting in nine parameter combinations. Each combination was repeated with five random seeds.
+
+For M = 64 and B = 64, the mean normal-angle difference from the reference was approximately 0.279 degrees and the mean offset difference was approximately 1.87 mm. With M = 1024 and B = 256, the values improved to approximately 0.079 degrees and 0.59 mm. Increasing M improved the chance of generating a good initial hypothesis.
+
+The value of B determines how many points are used before the hypotheses are pruned. A small B reduces the number of evaluations, but the ranking is based on less evidence. A larger B gives a more reliable ranking, but increases the computational cost.
+
+For M = 1024, increasing B from 256 to 1024 increased the mean number of model-point evaluations from approximately 0.52 million to 2.10 million. The mean angle difference changed only slightly from approximately 0.079 to 0.088 degrees. Based on these results, I selected M = 1024 and B = 256 as a suitable compromise between accuracy and computation time.
+
+Advantages:
+- Weak hypotheses are removed before being evaluated on the complete point cloud.
+- M directly controls the initial number of hypotheses.
+- It can require fewer model-point evaluations than evaluating every hypothesis on all points.
+
+Disadvantages:
+- A small M may not include a sufficiently good hypothesis.
+- A small B can cause a good model to be removed too early.
+- Removed hypotheses cannot return in later steps.
+- Large M or B values reduce the computational advantage.
+
+Results:
+results/preemptive_parameter_comparison.png
+results/preemptive_parameter_summary.csv
+results/floor_plane_M64.png
+results/floor_plane_M256.png
+results/floor_plane_M1024.png
+results/three_M_comparison.png
