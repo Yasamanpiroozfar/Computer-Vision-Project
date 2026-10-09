@@ -1,0 +1,27 @@
+{
+  "method": "resnet18_svm_detection_pipeline",
+  "classification_model": "work/balloon_pipeline/models/svm_resnet18.joblib",
+  "score_threshold": 0.4,
+  "nms_iou": 0.3,
+  "top_k": 200,
+  "coco_style_mAP_0.50_0.95": 0.09161249647355124,
+  "AP_by_IoU_threshold": {
+    "0.5": 0.3830014673178974,
+    "0.55": 0.2291943873120344,
+    "0.6": 0.20938543809132046,
+    "0.65": 0.06121033868092691,
+    "0.7": 0.02833333333333333,
+    "0.75": 0.005,
+    "0.8": 0.0,
+    "0.85": 0.0,
+    "0.9": 0.0,
+    "0.95": 0.0
+  },
+  "MABO_test_proposals": 0.6813745712527698,
+  "proposal_recall": {
+    "0.5": 1.0,
+    "0.75": 0.2
+  },
+  "num_test_detections_after_threshold_nms": 36,
+  "num_test_ground_truth_boxes": 25
+}

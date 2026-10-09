@@ -1,0 +1,30 @@
+{
+  "method": "resnet18_svm_detection_pipeline",
+  "train_shape": [
+    10183,
+    512
+  ],
+  "valid_shape": [
+    3234,
+    512
+  ],
+  "kernel": "linear",
+  "C": 0.01,
+  "use_pca": false,
+  "pca_components": 128,
+  "accuracy": 0.9860853432282004,
+  "precision": 0.5555555555555556,
+  "recall": 0.8333333333333334,
+  "f1": 0.6666666666666667,
+  "classification_AP": 0.822289270448562,
+  "confusion_matrix": [
+    [
+      3144,
+      36
+    ],
+    [
+      9,
+      45
+    ]
+  ]
+}

@@ -1,0 +1,9 @@
+numpy
+matplotlib
+scikit-image
+scikit-learn
+joblib
+tqdm
+torch
+torchvision
+Pillow

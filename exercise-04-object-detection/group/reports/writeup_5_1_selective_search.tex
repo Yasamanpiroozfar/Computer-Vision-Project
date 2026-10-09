@@ -1,0 +1,49 @@
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.72em}
+\setlist[itemize]{leftmargin=1.6em, itemsep=0.2em, topsep=0.2em}
+\raggedright
+\begin{document}
+
+\begin{center}
+{\Large \textbf{Exercise 5.1 - Selective Search}}\\[0.5em]
+{\normalsize Written Answers}
+\end{center}
+
+\section*{Q5.1.1 - Why is Selective Search needed?}
+\textbf{Felzenszwalb can already generate segmentations for the whole image, why do we need Selective Search at all?}
+
+Felzenszwalb segmentation provides an initial partition of the image into coherent low-level regions. This is useful as a starting point, but the obtained segments are not necessarily object proposals. A single object may be divided into several segments, while one segment may also represent only a small visual part of a larger object.
+
+Selective Search is therefore needed as a higher-level proposal generation method. It starts from the initial segmentation and hierarchically merges neighboring regions according to visual similarity. This produces candidate regions at multiple scales and makes it more likely to obtain regions that correspond to complete objects or meaningful parts of an image. In this sense, Felzenszwalb gives the initial regions, while Selective Search turns them into object hypotheses.
+
+\section*{Q5.1.2 - Proposal filtering}
+\textbf{Proposal filtering is implemented in \texttt{main.py}. What are the criteria based on which the boxes are filtered and what might be the effect? Do you agree with the criteria? Can you think of additional ones?}
+
+The filtering step is mainly used to make the displayed proposal results more readable. In the implementation, repeated rectangles are removed so that identical boxes are not drawn multiple times. Very small proposals are also discarded, since they usually correspond to details that are too small to be useful in the final visualization. In addition, boxes with extreme aspect ratios are filtered out, so that the remaining proposals are more compact and easier to inspect visually.
+
+The positive effect of this filtering is that the final result image is less crowded. Without filtering, Selective Search can produce many overlapping boxes, which makes it difficult to interpret the output. However, the filtering can also remove valid proposals. This is especially important for humanities images, where relevant objects can be elongated, for example human figures, inscriptions, columns, architectural elements, or long decorative structures.
+
+I agree with using filtering for visualization, but I would not make it too strict. A very restrictive aspect-ratio filter can make the result cleaner, but it may also hide meaningful object candidates. Additional criteria could include removing boxes that cover almost the full image, filtering boxes with very low color or texture variation, or adapting the minimum size threshold to the image resolution.
+
+\section*{Q5.1.3 - Rectangles from arbitrary regions}
+\textbf{Selective Search iteratively merges regions of arbitrary shapes. How do we obtain rectangles / box proposals from that?}
+
+The merged regions produced by Selective Search can have arbitrary shapes. To convert such a region into a rectangular proposal, the bounding box of the region is computed. This is done by finding the minimum and maximum pixel coordinates in both the horizontal and vertical directions. The resulting axis-aligned rectangle is the smallest rectangle that contains the whole region.
+
+Thus, the proposal box is not the exact shape of the merged region. It is a rectangular approximation that encloses the region and can be used by later object detection stages, such as cropping the candidate region and classifying it.
+
+\section*{Q5.1.4 - Effect of \texttt{k} and number of proposals}
+\textbf{Describe the effect of changing the \texttt{k} parameter of the Felzenszwalb algorithm on the final region proposals, and describe how changing the number of proposals affects the metric.}
+
+The parameter \texttt{k} controls the scale of the initial Felzenszwalb segmentation. A smaller value of \texttt{k} generally produces more and smaller initial segments. This can preserve fine image details and may help to generate proposals for small objects, but it also increases the number of regions and the computational cost. A larger value of \texttt{k} produces fewer and larger initial segments. This makes the process faster and the output less cluttered, but it can merge small objects too early and reduce the chance of obtaining accurate object proposals.
+
+The number of proposals also affects the evaluation. If more proposals are kept, the probability increases that at least one proposal overlaps well with a true object, so proposal-based metrics such as recall or MABO can improve. At the same time, too many proposals make the following detection stage slower and may increase the number of false positives. If too few proposals are kept, the pipeline becomes faster and cleaner, but relevant object candidates may be removed before the classifier can evaluate them.
+
+\end{document}

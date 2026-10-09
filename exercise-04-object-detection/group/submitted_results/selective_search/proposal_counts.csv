@@ -1,0 +1,10 @@
+dataset,image,felzenszwalb_k,colour_space,raw_hierarchical_regions,moderate_filtered_proposals,min_region_size,max_aspect_ratio,output
+chrisarch,ca-annun1.jpg,100,hsv,1413,30,2000,1.5,results\selective_search\chrisarch_ca-annun1_proposals.jpg
+chrisarch,ca-annun2.jpg,100,hsv,1945,49,2000,1.5,results\selective_search\chrisarch_ca-annun2_proposals.jpg
+chrisarch,ca-annun3.jpg,100,hsv,1351,22,2000,1.5,results\selective_search\chrisarch_ca-annun3_proposals.jpg
+arthist,adoration1.jpg,100,hsv,1253,55,2000,1.5,results\selective_search\arthist_adoration1_proposals.jpg
+arthist,annunciation1.jpg,100,hsv,902,22,2000,1.5,results\selective_search\arthist_annunciation1_proposals.jpg
+arthist,baptism1.jpg,100,hsv,1061,33,2000,1.5,results\selective_search\arthist_baptism1_proposals.jpg
+classarch,ajax3.jpg,100,hsv,731,33,2000,1.5,results\selective_search\classarch_ajax3_proposals.jpg
+classarch,leading1.jpg,100,hsv,1377,33,2000,1.5,results\selective_search\classarch_leading1_proposals.jpg
+classarch,pursuit2.jpg,100,hsv,1024,37,2000,1.5,results\selective_search\classarch_pursuit2_proposals.jpg

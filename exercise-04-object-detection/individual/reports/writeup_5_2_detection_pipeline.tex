@@ -1,0 +1,56 @@
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.72em}
+\setlist[itemize]{leftmargin=1.6em, itemsep=0.2em, topsep=0.2em}
+\raggedright
+\begin{document}
+
+\begin{center}
+{\Large \textbf{Exercise 5.2 - Detection Pipeline}}\\[0.5em]
+{\normalsize Written Answers}
+\end{center}
+
+\section*{Q5.2.1 - Differences to Uijlings et al.}
+\textbf{Your implementation is a simplified version of Uijlings et al. approach. In what ways does their version differ from yours?}
+
+The implementation follows the same general idea as the Uijlings et al. detection pipeline: region proposals are generated first, features are extracted from the proposed regions, and an SVM classifier is trained to decide whether a region contains the target object. However, the implementation used here is a simplified version of the original method.
+
+\textbf{Features and classifier.} Uijlings et al. use hand-crafted descriptors such as color and texture histograms, spatial representations, and SIFT-based features, combined with SVM classifiers. In this implementation, region features are extracted with a pre-trained ResNet18 network and then classified with a scikit-learn SVM. This replaces the original feature engineering with CNN-based embeddings.
+
+\textbf{Training policy.} In the original pipeline, difficult negative examples play an important role. False positives and proposals with partial overlap can be used to improve the classifier during training. In this implementation, proposals are labeled with two IoU thresholds. Proposals above the positive threshold are used as balloon examples, proposals below the negative threshold are used as background, and ambiguous proposals in between are ignored.
+
+\textbf{Region proposals.} The original Selective Search method combines multiple strategies and configurations, for example different color spaces and similarity combinations, in order to obtain a diverse set of proposals. The implementation here uses a single Selective Search configuration and applies basic proposal filtering such as removing duplicate or very small boxes.
+
+\textbf{Scope of the detector.} The original approach is intended for multi-class object detection and can train classifiers for several object categories. This implementation is restricted to one object class, namely balloons. Therefore, it does not require inter-class score calibration or one classifier per class.
+
+\textbf{Post-processing and evaluation.} The original pipeline is evaluated on larger benchmark datasets and uses a more complete detection setup. Here, detections are ranked using the SVM scores, non-maximum suppression is applied with fixed thresholds, and the final performance is evaluated on the small balloon test set with COCO-style mAP and MABO.
+
+\section*{Q5.2.2 - Positive and negative thresholds}
+\textbf{What is the effect of changing the thresholds for positive and negative samples? Why do we need two thresholds instead of just one?}
+
+The positive threshold determines which proposals are treated as object examples. If this threshold is high, only proposals that overlap strongly with a ground-truth box are used as positives. This gives cleaner positive training samples, but reduces the number of available examples. If the positive threshold is lower, more proposals are accepted as positives, but some of them may only cover the object loosely or include too much background.
+
+The negative threshold determines which proposals are treated as background examples. A low negative threshold selects only proposals with very little overlap with the object, which gives cleaner negative samples. A higher negative threshold produces more negative examples, but some of them may still contain parts of the object and can confuse the classifier.
+
+Two thresholds are useful because proposals with intermediate IoU values are ambiguous. They are not good positive examples because they do not localize the object accurately enough, but they are also not clean background examples because they may still contain object parts. By using a positive threshold and a negative threshold, the uncertain middle range can be ignored, which gives a clearer separation between foreground and background training samples.
+
+\section*{Q5.2.3 - Increasing the amount of training data}
+\textbf{The balloon dataset is quite small and does not provide many training samples. Can you think of ways to increase the amount of training data?}
+
+The amount of training data can be increased with data augmentation. For example, the existing images or cropped proposal regions can be horizontally flipped, slightly rotated, scaled, cropped, or changed in brightness and contrast. These transformations create additional training examples while preserving the object label.
+
+Another possibility is to generate additional positive samples from the ground-truth boxes. The ground-truth boxes can be slightly shifted or scaled while keeping a high IoU with the original annotation. This creates more positive examples around the true object location. More Selective Search proposals can also be kept during proposal generation, which increases the number of candidate regions available for training.
+
+A further improvement would be to add more annotated balloon images. Since the dataset is small, transfer learning is also useful, because the pre-trained CNN already contains visual features learned from a much larger dataset.
+
+\section*{Evaluation settings and metrics}
+
+The reported evaluation was achieved with a ResNet18 + SVM detection pipeline, a score threshold of 0.4, NMS IoU 0.3, and top-$k$ 200. The test set evaluation file reports mAP@0.50:0.95 = 0.0916, AP@0.50 = 0.3830, AP@0.75 = 0.0050, MABO for test proposals = 0.6814, proposal recall@0.50 = 1.0000, and proposal recall@0.75 = 0.2000. The run produced 36 detections after thresholding and NMS for 25 ground-truth boxes. For the detailed values, the evaluation file is stored at \texttt{results/balloon\_pipeline/evaluation.json}.
+
+\end{document}
